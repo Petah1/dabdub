@@ -52,6 +52,8 @@ import { ApiVersionModule } from './api-version/api-version.module';
 import { DeprecationHeadersInterceptor } from './api-version/deprecation-headers.interceptor';
 import { CronModule } from './cron/cron.module';
 import { SentryModule } from './sentry/sentry.module';
+import { PrometheusModule } from './prometheus/prometheus.module';
+import { HttpMetricsInterceptor } from './prometheus/http-metrics.interceptor';
 
 @Module({
   imports: [
@@ -96,6 +98,7 @@ import { SentryModule } from './sentry/sentry.module';
     }),
 
     HealthModule,
+    PrometheusModule,
     ApiVersionModule,
     SorobanModule,
     CronModule,
@@ -185,6 +188,10 @@ import { SentryModule } from './sentry/sentry.module';
     },
     {
       provide: APP_INTERCEPTOR,
+      useClass: HttpMetricsInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
       useClass: HttpLoggingInterceptor,
     },
     {
@@ -203,4 +210,3 @@ export class AppModule implements NestModule {
     consumer.apply(MaintenanceModeMiddleware).forRoutes('*');
   }
 }
-
